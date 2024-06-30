@@ -1,0 +1,18 @@
+{
+  "babies": [
+    {
+      "name": "Isaiah",
+      "weight": 2000,
+      "feeds": [
+        {
+          "amount": 20,
+          "timestamp": 1719786136154
+        },
+        {
+          "amount": 20,
+          "timestamp": 1719786138750
+        }
+      ]
+    }
+  ]
+}
