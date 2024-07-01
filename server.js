@@ -6,7 +6,7 @@ const cors = require('cors');  // Add this line
 
 const app = express();
 const port = 3000;
-const dataFilePath = path.join(__dirname, 'data.json');
+const dataFilePath = path.join('/var/data/', 'data.json');
 
 app.use(cors());  // Add this line
 app.use(bodyParser.json());
