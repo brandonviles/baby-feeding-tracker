@@ -1,63 +1,87 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const fs = require('fs');
-const path = require('path');
-const cors = require('cors');  // Add this line
+const { Client } = require('pg');
+const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
-const port = 3000;
-const dataFilePath = path.join('/var/data/', 'data.json');
+const PORT = process.env.PORT || 3000;
 
-app.use(cors());  // Add this line
+app.use(cors());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
-// Load data from file
-const loadData = () => {
-  if (!fs.existsSync(dataFilePath)) {
-    return { babies: [] };
+const client = new Client({
+  connectionString: `${process.env.SUPABASE_URL}`,
+  ssl: { rejectUnauthorized: false }
+});
+
+client.connect();
+
+app.get('/api/babies', async (req, res) => {
+  try {
+    const result = await client.query('SELECT * FROM babies');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching babies:', error);
+    res.status(500).send('Internal Server Error');
   }
-  const data = fs.readFileSync(dataFilePath);
-  return JSON.parse(data);
-};
-
-// Save data to file
-const saveData = (data) => {
-  fs.writeFileSync(dataFilePath, JSON.stringify(data, null, 2));
-};
-
-// Get all babies
-app.get('/api/babies', (req, res) => {
-  const data = loadData();
-  res.json(data);
 });
 
-// Add or update a baby
-app.post('/api/babies', (req, res) => {
-  const data = loadData();
-  const baby = req.body;
-  const existingBabyIndex = data.babies.findIndex(b => b.name === baby.name);
-
-  if (existingBabyIndex !== -1) {
-    data.babies[existingBabyIndex] = baby;
-  } else {
-    data.babies.push(baby);
+app.post('/api/babies', async (req, res) => {
+  const { name, weight } = req.body;
+  try {
+    await client.query('INSERT INTO babies (name, weight) VALUES ($1, $2)', [name, weight]);
+    res.status(200).send('Baby added');
+  } catch (error) {
+    console.error('Error adding baby:', error);
+    res.status(500).send('Internal Server Error');
   }
-
-  saveData(data);
-  res.status(200).send('Baby data saved successfully');
 });
 
-// Delete a baby
-app.delete('/api/babies/:name', (req, res) => {
-  const data = loadData();
-  const babyName = req.params.name;
-  data.babies = data.babies.filter(b => b.name !== babyName);
-
-  saveData(data);
-  res.status(200).send('Baby deleted successfully');
+app.delete('/api/babies/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await client.query('DELETE FROM babies WHERE id = $1', [id]);
+    res.status(200).send('Baby deleted');
+  } catch (error) {
+    console.error('Error deleting baby:', error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}/`);
+app.get('/api/feeds/:baby_id', async (req, res) => {
+  const { baby_id } = req.params;
+  try {
+    const result = await client.query('SELECT * FROM feeds WHERE baby_id = $1', [baby_id]);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching feeds:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.post('/api/feeds', async (req, res) => {
+  const { baby_id, amount } = req.body;
+  try {
+    await client.query('INSERT INTO feeds (baby_id, amount) VALUES ($1, $2)', [baby_id, amount]);
+    res.status(200).send('Feed logged');
+  } catch (error) {
+    console.error('Error logging feed:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.delete('/api/feeds/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await client.query('DELETE FROM feeds WHERE id = $1', [id]);
+    res.status(200).send('Feed deleted');
+  } catch (error) {
+    console.error('Error deleting feed:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
