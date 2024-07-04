@@ -35,6 +35,19 @@ app.post('/api/babies', async (req, res) => {
   }
 });
 
+app.put('/api/babies/:id', async (req, res) => {
+  const { id } = req.params;
+  const { weight } = req.body;
+  try {
+    const { data, error } = await supabase.from('babies').update({ weight }).eq('id', id);
+    if (error) throw error;
+    res.status(200).send('Baby weight updated');
+  } catch (error) {
+    console.error('Error updating baby weight:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 app.delete('/api/babies/:id', async (req, res) => {
   const { id } = req.params;
   try {
