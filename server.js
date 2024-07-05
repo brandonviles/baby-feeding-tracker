@@ -23,6 +23,21 @@ app.get('/api/babies', async (req, res) => {
   }
 });
 
+app.get('/api/babies/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { data, error } = await supabase
+      .from('babies')
+      .select('*')
+      .eq('id', id);
+    if (error) throw error;
+    res.status(200).json(data[0]);
+  } catch (error) {
+    console.error('Error fetching baby:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 app.post('/api/babies', async (req, res) => {
   const { name, weight } = req.body;
   try {
