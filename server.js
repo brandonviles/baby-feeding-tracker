@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-const apiBase = '/https://baby-feeding-tracker.onrender.com/apis/';
+const apiBase = 'https://baby-feeding-tracker.onrender.com/apis/';
 
 app.get(apiBase + 'babies', async (req, res) => {
   try {
