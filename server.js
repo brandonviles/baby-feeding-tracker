@@ -12,7 +12,9 @@ app.use(bodyParser.json());
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-app.get('/api/babies', async (req, res) => {
+const apiBase = '/https://baby-feeding-tracker.onrender.com/apis/';
+
+app.get(apiBase + 'babies', async (req, res) => {
   try {
     const { data, error } = await supabase.from('babies').select('*');
     if (error) throw error;
@@ -23,7 +25,7 @@ app.get('/api/babies', async (req, res) => {
   }
 });
 
-app.get('/api/babies/:id', async (req, res) => {
+app.get(apiBase + 'babies/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const { data, error } = await supabase
@@ -38,7 +40,7 @@ app.get('/api/babies/:id', async (req, res) => {
   }
 });
 
-app.post('/api/babies', async (req, res) => {
+app.post(apiBase + 'babies', async (req, res) => {
   const { name, weight } = req.body;
   try {
     const { data, error } = await supabase.from('babies').insert([{ name, weight }]);
@@ -50,7 +52,7 @@ app.post('/api/babies', async (req, res) => {
   }
 });
 
-app.put('/api/babies/:id', async (req, res) => {
+app.put(apiBase + 'babies/:id', async (req, res) => {
   const { id } = req.params;
   const { weight } = req.body;
   try {
@@ -63,7 +65,7 @@ app.put('/api/babies/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/babies/:id', async (req, res) => {
+app.delete(apiBase + 'babies/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const { data, error } = await supabase.from('babies').delete().eq('id', id);
@@ -75,7 +77,7 @@ app.delete('/api/babies/:id', async (req, res) => {
   }
 });
 
-app.get('/api/feeds/:baby_id', async (req, res) => {
+app.get(apiBase + 'feeds/:baby_id', async (req, res) => {
   const { baby_id } = req.params;
   try {
     const { data, error } = await supabase.from('feeds').select('*').eq('baby_id', baby_id);
@@ -87,7 +89,7 @@ app.get('/api/feeds/:baby_id', async (req, res) => {
   }
 });
 
-app.post('/api/feeds', async (req, res) => {
+app.post(apiBase + 'feeds', async (req, res) => {
   const { baby_id, amount } = req.body;
   try {
     const { data, error } = await supabase.from('feeds').insert([{ baby_id, amount }]);
@@ -99,7 +101,7 @@ app.post('/api/feeds', async (req, res) => {
   }
 });
 
-app.delete('/api/feeds/:id', async (req, res) => {
+app.delete(apiBase + 'feeds/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const { data, error } = await supabase.from('feeds').delete().eq('id', id);
