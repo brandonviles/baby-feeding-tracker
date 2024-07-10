@@ -114,11 +114,11 @@ app.delete('/api/feeds/:id', async (req, res) => {
 app.get('/api/babies/:baby_id/weights', async (req, res) => {
   const { baby_id } = req.params;
   try {
-    const { data, error } = await supabase.from('feeds').select('*').eq('baby_id', baby_id);
+    const { data, error } = await supabase.from('weights').select('*').eq('baby_id', baby_id);
     if (error) throw error;
     res.json(data);
   } catch (error) {
-    console.error('Error fetching feeds:', error);
+    console.error('Error fetching weights:', error);
     res.status(500).send('Internal Server Error');
   }
 });
