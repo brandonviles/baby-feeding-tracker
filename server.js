@@ -111,6 +111,42 @@ app.delete('/api/feeds/:id', async (req, res) => {
   }
 });
 
+app.get('/api/babies/:baby_id/weights', async (req, res) => {
+  const { baby_id } = req.params;
+  try {
+    const { data, error } = await supabase.from('feeds').select('*').eq('baby_id', baby_id);
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    console.error('Error fetching feeds:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.post('/api/weights', async (req, res) => {
+  const { baby_id, amount } = req.body;
+  try {
+    const { data, error } = await supabase.from('weights').insert([{ baby_id, amount }]);
+    if (error) throw error;
+    res.status(200).send('Weight logged');
+  } catch (error) {
+    console.error('Error logging weight:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.delete('/api/weights/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { data, error } = await supabase.from('weights').delete().eq('id', id);
+    if (error) throw error;
+    res.status(200).send('Weight deleted');
+  } catch (error) {
+    console.error('Error deleting weight:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
