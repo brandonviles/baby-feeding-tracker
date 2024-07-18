@@ -87,6 +87,18 @@ app.get('/api/feeds/:baby_id', async (req, res) => {
   }
 });
 
+app.get('/babies/:baby_id/api/feeds', async (req, res) => {
+  const { baby_id } = req.params;
+  try {
+    const { data, error } = await supabase.from('feeds').select('*').eq('baby_id', baby_id);
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    console.error('Error fetching feeds:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 app.post('/api/feeds', async (req, res) => {
   const { baby_id, amount } = req.body;
   try {
