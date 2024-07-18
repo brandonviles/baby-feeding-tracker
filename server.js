@@ -111,6 +111,38 @@ app.post('/api/feeds', async (req, res) => {
   }
 });
 
+app.post('/api/babies/:baby_id/feeds', async (req, res) => {
+  const { baby_id } = req.params
+  const { time, amount } = req.body
+
+  try {
+    const { data, error } = await supabase
+    .from('feeds')
+    .insert([{ baby_id, amount }])
+    if (error) throw error
+    res.status(200).send('Feed logged')
+  } catch (error) {
+    console.error('Error logging feed:', error)
+    res.status(500).send('Internal Server Error')
+  }
+})
+
+app.post('/api/babies/:baby_id/feeds', async (req, res) => {
+  const { baby_id } = req.params
+  const { time, amount } = req.body
+
+  try {
+    const { data, error } = await supabase
+    .from('feeds')
+    .insert([{ baby_id, amount }])
+    if (error) throw error
+    res.status(200).send('Feed logged')
+  } catch (error) {
+    console.error('Error logging feed:', error)
+    res.status(500).send('Internal Server Error')
+  }
+})
+
 app.delete('/api/feeds/:id', async (req, res) => {
   const { id } = req.params;
   try {
