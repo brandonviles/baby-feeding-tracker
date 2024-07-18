@@ -87,7 +87,7 @@ app.get('/api/feeds/:baby_id', async (req, res) => {
   }
 });
 
-app.get('/babies/:baby_id/api/feeds', async (req, res) => {
+app.get('/api/babies/:baby_id/feeds', async (req, res) => {
   const { baby_id } = req.params;
   try {
     const { data, error } = await supabase.from('feeds').select('*').eq('baby_id', baby_id);
